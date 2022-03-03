@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block show_detail %}
+<!-- 조회모드 -->
+
+            {% if rows_detail %}  
+            {% for row in rows_detail %}                    
+              <tr>
+                  <!-- 도금두께 -->
+                  <th class="th-left">1</th>
+                  <td class="align-center">{{row.x1}}</td>
+                  <td class="align-center">{{row.x2}}</td>
+                  <td class="align-center">{{row.x3}}</td>
+                  <td class="align-center">{{row.x4}}</td>
+                  <td class="align-center">{{row.x5}}</td>
+                  <td class="align-center">4</td> <!-- min -->
+                  <td class="align-center">1</td> <!-- max -->
+                  <td class="align-center">1</td> <!-- avg -->
+                  <td class="align-center">5</td> <!-- range -->
+                  <!-- 측정시간 -->
+                  {% csrf_token %}
+                  <td class="align-center">{{row.inputtime}}</td>
+                  {% csrf_token %}
+                  <td class="align-center">{{row.completetime}}</td>
+              </tr>
+            {% endfor %}
+            {% else %}
+              값 없음
+            {% endif %}
+
+
+{% endblock %}

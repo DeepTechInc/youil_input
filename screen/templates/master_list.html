@@ -1,0 +1,137 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Youil_Master Data</title>
+    <!-- <link rel="stylesheet" href="{% static 'style.css' %}"> -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
+    
+    <script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <script>
+        $(function () {
+            $("#datepicker_s").datepicker({ dateFormat: "yy-mm-dd" });
+        });
+    </script>
+    <script>
+        $(function () {
+            $("#datepicker_e").datepicker({ dateFormat: "yy-mm-dd" });
+        });
+    </script>
+</head>
+
+<body>
+    <!-- <div>
+
+        <form action="" method="POST" class="s-form">
+            <div class=search>
+                <table>
+                    {% csrf_token %}
+                    <tr>
+                        <th>생산일</th>
+                        <td>{{s_form.sel_count_day}}</td>
+                        <td> <input autocomplete="off" type="text" id="datepicker_s" name="date_start" /></td>
+                        <td> ~ <input autocomplete="off" type="text" id="datepicker_e" name="date_end" /></td>
+                    </tr>
+                    <tr>
+                        <th>LOT</th>
+                        <td colspan=3>{{s_form.lot_no}}</td>
+                    </tr>
+                    <tr>
+                        <th>제품</th>
+                        <td>{{s_form.sel_prod_code}}</td>
+                        <td colspan=2>{{s_form.text_prod_code}}</td>
+                    </tr>
+                    <tr>
+                        <th>계획상태</th>
+                        <td>{{s_form.sel_ordg_stat}}</td>
+                    </tr>
+                </table>
+                <input type="submit"> <input type="reset">
+            </div>
+        </form>
+    </div> -->
+    <div>
+        <!-- 검색창 -->
+        <form action="" method="POST" class="s-form">
+            <div class=search style="border:1px solid gold;">
+                <ul>
+                    {% csrf_token %}
+                    <li>생산일 {{s_form.sel_count_day}}
+                        <input autocomplete="off" type="text" id="datepicker_s" name="date_start" />
+                        ~ <input autocomplete="off" type="text" id="datepicker_e" name="date_end" />
+                    </li>
+                    <li>LOT {{s_form.lot_no}}</li>
+                    <li>제품 {{s_form.sel_prod_code}} {{s_form.text_prod_code}}</li>
+                    <li>계획상태 {{s_form.sel_ordg_stat}}</li>
+                </ul>
+                <input class='m-btn' type="submit"> <input class='m-btn blue' type="reset">
+            </div>
+        </form>
+    </div>
+    <div class=master style="border:1px solid black">
+        <!-- 마스터-->
+        <table>
+            <th>No</th>
+            <th>생산일자</th>
+            <th>제품명</th>
+            <th>Lot</th>
+            <th>상태</th>
+            <tbody>
+                {% for row in rows_master %}
+                <tr>
+                    <td><a href='/show_detail/'>{{row.workorder_index}}</a></td>
+                    <td>{{row.production_date}}</td>
+                    <td>{{row.goodsnum_name}}</td>
+                    <td>{{row.lot_no}}</td>
+                    <td>{{row.workorder_status}}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div style="border: 1px solid blue;clear:both;margin:2px;">
+        <!-- Show Detail -->
+        {% block show_detail %}
+        {% endblock %}
+    </div>
+    <div style="border:1px solid green;clear:both;margin:2px;">
+        <!-- Add Detail -->
+        <a href=/add_detail /> ADD DATA + </a>
+        {% block add_detail %}
+        {% endblock %}
+    </div>
+    <!-- </td>        
+    </tr>
+    <tr>
+        <td colspan="2" align='center'> <h2>&lt; DETAILS &gt;</h2> <a href = /add_detail/>ADD DETAIL</a> </td>
+    </tr>
+</table> -->
+    <!-- </div> -->
+</body>
+
+</html>
+
+
+<!-- <!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>Youil_Master Data</title>
+</head>
+<body>
+
+<div>
+    <h2>Data List(MASTER)</h2>
+    <ul>
+        {% for row in rows %}
+            <li>No: {{row.index}}    작업일자: {{row.workDate}}    제품명: {{row.productName}}<br>LOT NO: {{row.lotNo}}    상태: {{row.status}}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+</body>
+</html>

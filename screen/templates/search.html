@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block search %}
+<div class="m-list" style="width:59%; float:right; margin-top:revert">
+    <div class="list master">
+        <table id="master-tb-th">
+            <colgroup>
+                <col width="5%" />
+                <col width="25%" />
+                <col width="25%" />
+                <col width="25%" />
+                <col width="20%" />
+            </colgroup>
+            <tr>
+                <th>No</th>
+                <th>생산일자</th>
+                <th>제품명</th>
+                <th>LOT</th>
+                <th>상태</th>
+            </tr>
+        </table>
+        <div class="master-tb-wrap">
+            <table id="master-table">
+                <colgroup>
+                    <col width="5%" />
+                    <col width="25%" />
+                    <col width="25%" />
+                    <col width="25%" />
+                    <col width="20%" />
+                </colgroup>
+                <tbody id="master_tbody">
+                    {% for row in rows_master %}
+                    <tr id={{row.workorderinput_index}} onclick="searchInspection(this);">
+                        <td class="align-center">{{row.id}}</td>
+                        <td class="align-center">{{row.production_date}}</td>
+                        <td class="align-center">{{row.goodsnum_name}}</td>
+                        <td class="align-center">{{row.lot_no}}</td>
+                        <td class="align-center">{{row.workorder_status}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="paging">
+        <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="first">First</a>
+        <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="prev">Prev</a>
+        <div id="page-num" class="current">1</div>
+        <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="next">Next</a>
+        <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="last">Last</a>
+    </div>
+</div>
+{% endblock %}

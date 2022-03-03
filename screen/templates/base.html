@@ -1,0 +1,466 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="ko">
+
+<head>
+  <meta charset="utf-8">
+  <title>자주검사입력</title>
+
+  <!-- <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css"> -->
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
+  <script src="/static/js/jquery-3.5.1.min.js"></script>
+  <script src="/static/js/jquery.fancybox.min.js"></script>
+  <script src="/static/js/jquery-ui.min.js"></script>
+  <script src="/static/js/functions.js"></script>
+
+  <style>
+    .hidden {
+      display: none;
+    }
+
+    .m-register {
+      width: 40%;
+      float: left;
+    }
+
+    .m-register .form dl {
+      float: revert;
+      width: revert;
+      min-height: 53px;
+      padding: 9px 20px 9px 100px;
+    }
+
+    .m-register .form .select-input .m-calendar {
+      float: left;
+      width: 45%;
+    }
+
+    .m-select {
+      padding: 0 15px 0 15px;
+    }
+
+    .m-list .paging {
+      margin: 32px 0 0 0;
+    }
+
+    .m-list .list {
+      height: 263px;
+    }
+
+    .table-th-border th {
+      border: 0.5px solid lightgrey;
+    }
+
+    .bordr-r {
+      border-right: 0.5px solid lightgrey;
+    }
+
+    .bordr-t {
+      border-top: 0.5px solid lightgrey;
+    }
+
+    .m-register .form .select-input dd select {
+      width: 105px;
+    }
+
+    .m-register .form .select-input dd {
+      padding-left: 114px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <!-- <div class="container"> -->
+  <div class="body">
+    <div class="inner">
+      <div style="width:100%; height: 335px;">
+        <div class="m-register">
+          <div class="title-sub sm">
+            <p>생산계획 검색</p>
+          </div>          
+          <div style="margin-top: 21px">
+            <form class="form" action="/youil" method="GET" id="search-plan">
+              <dl class="select-input">
+                {{s_form.data_for_search}}
+                <dt>
+                  <p>생산일</p>
+                </dt>
+                <dd>                
+                  {{s_form.select_count_day}}
+                  {{s_form.date_start}}
+                  <em>~</em>
+                  {{s_form.date_end}}
+                </dd>
+              </dl>
+              <dl class="bg">
+                <dt>
+                  <p>LOT</p>
+                </dt>
+                <dd>
+                  {{s_form.lot_no}}
+                </dd>
+              </dl>
+              <dl class="select-input">
+                <dt>
+                  <p>제품</p>
+                </dt>
+                <dd>
+                  {{s_form.select_goodsnum}}
+                  {{s_form.text_goodsnum}}
+                </dd>
+              </dl>
+              <dl class="bg">
+                <dt>
+                  <p>생산라인</p>
+                </dt>
+                <dd>
+                  <!-- <select class="m-select" id="odrg_stat_cd">
+                            <option value="0">투입</option>
+                            <option value="11">중간완료</option>
+                            <option value="1">완료</option>
+                          </select> -->
+
+                  {{s_form.line_index}}
+                </dd>
+              </dl>
+          </div>
+          <div class="btn-area">
+            <input class="m-btn" type="reset" value="초기화">
+            <input class="m-btn blue" type="button" onclick="searchList()" value="검색">
+          </div>
+          </form>
+        </div>
+        <!-- 마스터 출력 -->
+        <div class="m-list" style="width:59%; float:right; margin-top:revert; ">
+          <div class="list master">
+            <table id="master-tb-th">
+              <colgroup>
+                <col width="5%" />
+                <col width="23%" />
+                <col width="20%" />
+                <col width="25%" />
+                <col width="12%" />
+                <col width="15%" />
+              </colgroup>
+              <tr>
+                <th>No</th>
+                <th>생산일자</th>
+                <th>제품명</th>
+                <th>LOT</th>
+                <th>생산라인</th>
+                <th>상태</th>
+              </tr>
+            </table>
+            <div class="master-tb-wrap" style="height:280px; overflow-y:scroll;">
+              <table id="master-table">
+                <colgroup>
+                  <col width="5%" />
+                  <col width="25%" />
+                  <col width="20%" />
+                  <col width="24%" />
+                  <col width="14%" />
+                  <col width="12%" />
+                </colgroup>
+                <tbody id="master-tbody">
+                  {% for row in rows_master %}
+                  <tr id={{row.workorderinput_index}} onclick="searchInspection(this);">
+                    <td class="align-center">{{forloop.counter}}</td>
+                    <td class="align-center">{{row.production_date}}</td>
+                    <td class="align-center">{{row.goodsnum_name}}</td>
+                    <td class="align-center">{{row.row_production_lot}}</td>
+                    <td class="align-center">{{row.production_line}}</td>
+                    <td class="align-center">{{row.completeyn}}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="m-list" style="margin-top: 20px;padding-top: 10px; border-top:1px solid;">
+        <div class="functions">
+          <!-- <p>총<strong><span  id="totalCnt"></strong>건</p> -->
+          <div class="action">
+            <a href="#" class="m-btn gray sm newRgsr" onclick="showRgsrTable('rgsr-mod');"><span
+                class="register">신규등록</span></a>
+            <a href="#" class="m-btn gray sm newRgsr" onclick="saveInspection();"><span class="register">저장</span></a>
+            <a href="#" class="m-btn gray sm newRgsr" onclick="showRgsrTable('shw-mod');"><span
+                class="register">취소</span></a>            
+          </div>
+        </div>
+        <!-- 조회모드 -->
+        <div class="list shw-mod">
+          <table id="detail-tb-th">
+            <colgroup>
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <col width="8%" />
+              <!-- <col width="10%" />
+              <col width="10%" /> -->
+            </colgroup>
+            <tr class="table-th-border">
+              <th colspan="10" style="background-color:#7AA55F">도금두께</th>
+              <!-- <th colspan="2" style="background-color:#7AA55F">측정시간</th> -->
+            </tr>
+            <tr>
+              <th>No</th>
+              <th>x1</th>
+              <th>x2</th>
+              <th>x3</th>
+              <th>x4</th>
+              <th>x5</th>
+              <th>Min</th>
+              <th>Max</th>
+              <th>Avg</th>
+              <th class="bordr-r">Range</th>
+              <!-- <th>투입시간</th>
+              <th>배출시간</th> -->
+            </tr>
+          </table>
+          <!-- 디테일 출력 -->
+          <!-- 조회모드 -->
+          <div class="rgsr-table-wrap">
+            <table id="detail-tb-th-shw">
+              <colgroup>
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <col width="8%" />
+                <!-- <col width="10%" />
+                <col width="10%" /> -->
+              </colgroup>
+              <tbody id="detail-tbody-shw">
+                
+                {% for row in rows_detail %}
+                <tr>
+                  <!-- 도금두께 -->
+                  <th class="th-left">{{forloop.counter}}</th>
+                  <td class="align-center">{{row.x1}}</td>
+                  <td class="align-center">{{row.x2}}</td>
+                  <td class="align-center">{{row.x3}}</td>
+                  <td class="align-center">{{row.x4}}</td>
+                  <td class="align-center">{{row.x5}}</td>
+                  <td class="align-center">{{row.min}}</td> <!-- min -->
+                  <td class="align-center">{{row.max}}</td> <!-- max -->
+                  <td class="align-center">{{row.avg}}</td> <!-- avg -->
+                  <td class="align-center">{{row.range}}</td> <!-- range -->
+          
+                </tr>
+                {% endfor %}
+                
+              </tbody>
+            </table>
+          </div>
+          
+        </div>
+
+        <!-- 입력모드 -->
+        <div class="list rgsr-mod" style="display:none;">
+          <table id="detail-tb-th-rgsr">
+            <colgroup>
+              <col width="19%" />
+              <col width="9%" />
+              <col width="9%" />
+              <col width="9%" />
+              <col width="9%" />
+              <col width="9%" />
+              <col width="9%" />
+              <col width="9%" />
+              <col width="9%" />
+              <col width="9%" />
+            </colgroup>
+            <tr>
+              <th></th>
+              <th>x1</th>
+              <th>x2</th>
+              <th>x3</th>
+              <th>x4</th>
+              <th>x5</th>
+              <th>Min</th>
+              <th>Max</th>
+              <th>Avg</th>
+              <th>Range</th>
+            </tr>
+          </table>
+          <form id="save-form" action="" method="POST">
+            {% csrf_token %}
+            <div class="detail-tb-wrap">
+              <table id="detail-table-rgsr">
+                <colgroup>
+                  <col width="19%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                  <col width="9%" />
+                </colgroup>
+                <tbody id="detail-tbody-rgsr">
+                  <tr>
+                    {{a_form.data_for_add}}
+                    <th class="th-left bordr-t guild-thk">도금두께</th>
+                    <td class="align-center">{{a_form.x1}}</td>
+                    {% if messages %}
+                    <ul class="messages">
+                      {% for message in messages %}
+                      <li{% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                    {% endif %}
+                    <td class="align-center">{{a_form.x2}}</td>
+                    <td class="align-center">{{a_form.x3}}</td>
+                    <td class="align-center">{{a_form.x4}}</td>
+                    <td class="align-center">{{a_form.x5}}</td>
+                    <td class="align-center min"></td>
+                    <td class="align-center max"></td>
+                    <td class="align-center avg"></td>
+                    <td class="align-center range"></td>
+                  </tr>
+                  <tr class="hidden">
+                    <th class="th-left bordr-t input-t">도금조 투입시간</th>
+                    <td class="align-center" colspan="3">{{a_form.input_datetime}}</td>
+                    <th class="th-left bordr-t input-t" colspan="2">도금조 배출시간</th>
+                    <td class="align-center" colspan="4">{{a_form.complete_datetime}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </form>
+        </div>
+        <!--  -->
+        <div>
+
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <script type="text/javascript">
+
+    $(document).ready(function () {
+      // 날짜셋팅
+      dateChange("dt_stat", "stt_dt", "end_dt");
+
+      // master row id 선택있는 경우
+      var work_id = location.pathname.split('/')[2];
+      if (work_id) {
+        selectMaster('#' + work_id)
+      } else {
+        // $('#master-tbody tr').eq(0).click();
+      }
+      // $('tagObj').addClass('bg');
+      // $('tagObj').addClass('bg');
+
+      // 
+      // if(location.pathname == "/youil") $('#master-tbody tr').eq(0).click();
+    });
+
+    function selectMaster(tagObj) {
+      $('tr').removeClass('bg');
+      $(tagObj).addClass('bg');
+    }
+
+    function searchInspection(tagObj) {
+      $.ajax({
+        url: "{% url 'youil' %}",
+        method: 'GET', // or another (GET), whatever you need
+        data: {
+          workorderinput_index: tagObj.id,
+          data_for_detail: "SHOW DETAIL"
+          // csrfmiddlewaretoken: $("input[name=csrfmiddlewaretoken]").val()
+        },
+        success: function (data) {
+          console.log(data)
+          history.pushState('', '자주검사입력', '/youil/' + tagObj.id + '/')  // HINT URL만 변경
+          $("#detail-tb-th-shw").load(window.location.href + " #detail-tb-th-shw"); // HINT : 특정 DIV만 변경          
+          selectMaster(tagObj);
+        }
+      });
+    }
+
+    function showRgsrTable(target_c) {
+      $('.list:not(.master)').css('display', 'none');
+      $('.' + target_c).css('display', 'block');
+    }
+
+    /**
+     * dateChange
+     * 조회조건 날짜 선택 함수
+     * stat_cd : 금일/전일/일주일/일개월/삼개월/육개월
+     * stt_dt : 시작일자 id
+     * end_dt: 종료일자 id
+     */
+    function dateChange(stat_cd, stt_dt, end_dt) {
+      // 날짜셋팅
+      var dtStat = $("#" + stat_cd).val();
+      var date = new Date();
+
+      if (dtStat == "00") { // 전체
+        $("#" + stt_dt).datepicker().datepicker("setDate", "");
+        $("#" + end_dt).datepicker().datepicker("setDate", "");
+      } else if (dtStat == "10") { // 금일
+        $("#" + stt_dt).datepicker().datepicker("setDate", new Date());
+        $("#" + end_dt).datepicker().datepicker("setDate", new Date());
+      } else if (dtStat == "20") { // 전일
+        date.setDate(date.getDate() - 1);
+        $("#" + stt_dt).datepicker().datepicker("setDate", date);
+        $("#" + end_dt).datepicker().datepicker("setDate", new Date());
+      } else if (dtStat == "30") { // 일주일
+        date.setDate(date.getDate() - 6);
+        $("#" + stt_dt).datepicker().datepicker("setDate", date);
+        $("#" + end_dt).datepicker().datepicker("setDate", new Date());
+      } else if (dtStat == "40") { // 1개월
+        date.setMonth(date.getMonth() - 1);
+        $("#" + stt_dt).datepicker().datepicker("setDate", date);
+        $("#" + end_dt).datepicker().datepicker("setDate", new Date());
+      } else if (dtStat == "50") { // 3개월
+        date.setMonth(date.getMonth() - 3);
+        $("#" + stt_dt).datepicker().datepicker("setDate", date);
+        $("#" + end_dt).datepicker().datepicker("setDate", new Date());
+      } else if (dtStat == "60") { // 6개월
+        date.setMonth(date.getMonth() - 6);
+        $("#" + stt_dt).datepicker().datepicker("setDate", date);
+        $("#" + end_dt).datepicker().datepicker("setDate", new Date());
+      }
+    }
+
+    function searchList() {
+      $('#search-plan').submit();
+      $("#detail-tb-th-shw").empty();
+      $("#detail-tb-th-shw").load(window.location.href + " (#detail-tb-th-shw).empty()"); //  특정 DIV만 변경
+      $("#master-tb-wrap").load(window.location.href + " #master-tb-wrap"); //  특정 DIV만 변경
+    }
+
+    function saveInspection() {      
+      $('#save-form').submit();
+      $("#detail-tb-th-shw").load(window.location.href + " #detail-tb-th-shw"); // HINT : 특정 DIV만 변경          
+    }
+  </script>
+</body>
+
+</html>

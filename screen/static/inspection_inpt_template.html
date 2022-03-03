@@ -1,0 +1,484 @@
+{% load static %}
+<!DOCTYPE html>
+
+<html lang="ko">
+  <head>
+    <meta charset="utf-8">
+    <title>자주주검사입력</title>
+
+    <!-- <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/jquery-ui.min.css"> -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="stylesheet" href="{% static 'css/jquery-ui.min.css' %}">
+    <script src="{% static js/jquery-3.5.1.min.js %}"></script>
+    <script src="{% static js/jquery.fancybox.min.js %}"></script>
+    <script src="{% static js/jquery-ui.min.js %}"></script>
+    <script src="{% static js/functions.js %}"></script>
+
+    <style>
+    .m-register{width:40%;float:left;}
+    .m-register .form dl {float:revert; width:revert;min-height: 53px;padding: 9px 20px 9px 100px;}
+    .m-register .form .select-input .m-calendar {float: left;width: 45%;}
+    .m-select{padding: 0 15px 0 15px;}
+    .m-list .paging {margin: 32px 0 0 0;}
+    .m-list .list{height:263px;}
+    .table-th-border th {border: 0.5px solid lightgrey;}
+    .bordr-r{border-right: 0.5px solid lightgrey;}
+    .bordr-t{border-top: 0.5px solid lightgrey;}
+    .m-register .form .select-input dd select {width: 105px;}
+    .m-register .form .select-input dd {padding-left: 114px;}
+    </style>
+
+  </head>
+  <body>
+    <!-- <div class="container"> -->
+    <div class="body">
+        <div class="inner">
+          <div style="width:100%; height: 335px;">
+            <div class="m-register">
+              <div class="title-sub sm"><p>생산계획 검색</p></div>
+              <!-- <div class="functions">
+                  <div class="right">
+                      <div class="m-toggle">
+                          <p>상세조건</p>
+                          <label class="m-toggle">
+                              <input type="checkbox" onclick="displayDetail(this);" />
+                              <span></span>
+                          </label>
+                      </div>
+                  </div>
+              </div> -->
+              <div class="form" style="margin-top: 21px" action="" method="POST">
+                  <dl class="select-input">
+                      <dt><p>생산일</p></dt>
+                      <dd>
+                          <select class="m-select" id="dt_stat" onchange="dateChange('dt_stat','stt_dt','end_dt');">
+                              <option value="10" selected="selected">금일</option>
+                              <option value="20">전일</option>
+                              <option value="30">일주일</option>
+                              <option value="40">1개월</option>
+                              <option value="50">3개월</option>
+                          </select>
+                          <input type="text" class="datepicker m-calendar" id="stt_dt" readonly />
+                          <em>~</em>
+                          <input type="text" class="datepicker m-calendar" id="end_dt" readonly />
+                      </dd>
+                  </dl>
+                  <dl class="bg">
+                      <dt><p>LOT</p></dt>
+                      <dd>
+                         <input type="text" class="m-input" id="odrg_chpr_nm" onkeypress="if(event.keyCode == 13) { searchList();}" />
+                      </dd>
+                  </dl>
+                  <dl class="select-input">
+                    <dt><p>제품</p></dt>
+                    <dd>
+                      <select class="m-select" id="search_type">
+                        <option value ="s_bzpt_id">제품명</option>
+                        <option value ="s_bzpt_nm" selected="selected">제품코드</option>
+                      </select>
+                      <input type="text" class="m-input" id="search_value" maxlength="50" onkeypress="if(event.keyCode == 13) { searchList();}"/>
+                    </dd>
+                  </dl>
+                  <dl class="bg">
+                      <dt><p>계획상태</p></dt>
+                      <dd>
+                          <select class="m-select" id="odrg_stat_cd">
+                            <option value="0">투입</option>
+                            <option value="11">중간완료</option>
+                            <option value="1">완료</option>
+                          </select>
+                      </dd>
+                  </dl>
+              </div>
+              <div class="btn-area">
+                  <button class="m-btn" onclick="resetSearch();"><span>초기화</span></button>
+                  <button class="m-btn blue" onclick="searchList();"><span>검색</span></button>
+              </div>
+          </div>
+          <div class="m-list" style="width:59%; float:right; margin-top:revert">
+              <div class="list master">
+                  <table id="rgsr-table-th">
+                      <colgroup>
+                          <col width="5%"  />
+                          <col width="25%" />
+                          <col width="25%" />
+                          <col width="25%" />
+                          <col width="20%" />
+                      </colgroup>
+                      <tr>
+                          <th>No</th>
+                          <th>생산일자</th>
+                          <th>제품명</th>
+                          <th>LOT</th>
+                          <th>상태</th>
+                      </tr>
+                  </table>
+                  <div class="rgsr-table-wrap">
+                      <table id="rgsr-table">
+                          <colgroup>
+                            <col width="5%"  />
+                            <col width="25%" />
+                            <col width="25%" />
+                            <col width="25%" />
+                            <col width="20%" />
+                          </colgroup>
+                          <tbody id="rgsr_tbody">
+                            <tr id="LT202106010001" onclick="searchInspection(this)">
+                              <td class="align-center">1</td>
+                              <td class="align-center">2021-06-21</td>
+                              <td class="align-center">F/G 8T M6*16 P1.0</td>
+                              <td class="align-center">LT202106010001</td>
+                              <td class="align-center">중간완료</td>
+                              </tr>
+                            <tr id="LT202106010001"  onclick="searchInspection(this)">
+                              <td class="align-center">2</td>
+                              <td class="align-center">2021-06-22</td>
+                              <td class="align-center">F/G 8T M6*16 P1.0</td>
+                              <td class="align-center">LT202106010002</td>
+                              <td class="align-center">중간완료</td>
+                            </tr>
+                            <tr id="LT202106010003"  onclick="searchInspection(this)">
+                              <td class="align-center">3</td>
+                              <td class="align-center">2021-06-23</td>
+                              <td class="align-center">F/G 8T M6*16 P1.0</td>
+                              <td class="align-center">LT202106010003</td>
+                              <td class="align-center">중간완료</td>
+                            </tr>
+                            <tr id="LT202106010004"  onclick="searchInspection(this)">
+                              <td class="align-center">4</td>
+                              <td class="align-center">2021-06-24</td>
+                              <td class="align-center">F/G 8T M6*16 P1.0</td>
+                              <td class="align-center">LT202106010004</td>
+                              <td class="align-center">중간완료</td>
+                            </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+              <div class="paging">
+                    <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="first">First</a>
+                    <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="prev">Prev</a>
+                    <div id="page-num" class="current">1</div>
+                    <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="next">Next</a>
+                    <a href="javascript:void(0);" onclick="onChangePagingBtn(this);" class="last">Last</a>
+              </div>
+            </div>
+          </div>
+
+          <div class="m-list" style="margin-top: 20px;padding-top: 10px; border-top:1px solid;">
+              <div class="functions">
+                  <!-- <p>총<strong><span  id="totalCnt"></strong>건</p> -->
+                  <div class="action">
+                      <a href="#" class="m-btn gray sm newRgsr" onclick="showRgsrTable('rgsr-mod');"><span class="register">신규등록</span></a>
+                      <a href="#" class="m-btn gray sm newRgsr" onclick="rgsrInspection();"><span class="register">저장</span></a>
+                      <a href="#" class="m-btn gray sm newRgsr" onclick="showRgsrTable('shw-mod');"><span class="register">취소</span></a>
+                  </div>
+              </div>
+              <div class="list shw-mod">
+                  <table id="rgsr-table-th">
+                      <colgroup>
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                          <col width="5%" />
+                      </colgroup>
+                      <tr class="table-th-border">
+                        <th colspan="10">도금두께</th>
+                        <th colspan="9">측정시간</th>
+                      </tr>
+                      <tr>
+                          <th>No</th>
+                          <th>x1</th>
+                          <th>x2</th>
+                          <th>x3</th>
+                          <th>x4</th>
+                          <th>x5</th>
+                          <th>Min</th>
+                          <th>Max</th>
+                          <th>Avg</th>
+                          <th class="bordr-r">Range</th>
+                          <th>x1</th>
+                          <th>x2</th>
+                          <th>x3</th>
+                          <th>x4</th>
+                          <th>x5</th>
+                          <th>Min</th>
+                          <th>Max</th>
+                          <th>Avg</th>
+                          <th>Range</th>
+                      </tr>
+                  </table>
+                  <div class="rgsr-table-wrap">
+                      <table id="rgsr-table">
+                          <colgroup>
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                            <col width="5%" />
+                          </colgroup>
+                          <tbody id="rgsr_tbody">
+                            <tr>
+                              <th class="th-left">1</th>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                            </tr>
+                            <tr>
+                              <th class="th-left">2</th>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                            </tr>
+                            <tr>
+                              <th class="th-left">3</th>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                            </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+              <div class="list rgsr-mod" style="display:none;">
+                  <table id="rgsr-table-th">
+                      <colgroup>
+                          <col width="19%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                          <col width="9%" />
+                      </colgroup>
+                      <tr>
+                          <th></th>
+                          <th>x1</th>
+                          <th>x2</th>
+                          <th>x3</th>
+                          <th>x4</th>
+                          <th>x5</th>
+                          <th>Min</th>
+                          <th>Max</th>
+                          <th>Avg</th>
+                          <th>Range</th>
+                      </tr>
+                  </table>
+                  <div class="rgsr-table-wrap">
+                      <table id="rgsr-table">
+                          <colgroup>
+                            <col width="19%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                            <col width="9%" />
+                          </colgroup>
+                          <tbody id="rgsr_tbody">
+                            <tr>
+                              <th class="th-left bordr-t">도금두께</th>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=1 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=2 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=3 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=4 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=5 class="m-input" maxlength="5"/></td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                            </tr>
+                            <tr>
+                              <th class="th-left bordr-t">Sn함량70%이상</th>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=1 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=2 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=3 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=4 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=5 class="m-input" maxlength="5"/></td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                            </tr>
+                            <tr>
+                              <th class="th-left bordr-t">Zn함량나머지</th>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=1 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=2 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=3 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=4 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=5 class="m-input" maxlength="5"/></td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                            </tr>
+                            <tr>
+                              <th class="th-left bordr-t">샘플취득시간</th>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=1 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=2 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=3 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=4 class="m-input" maxlength="5"/></td>
+                              <td class="align-center"><input type="number" style="text-align: right;" value=5 class="m-input" maxlength="5"/></td>
+                              <td class="align-center">1</td>
+                              <td class="align-center">5</td>
+                              <td class="align-center">3</td>
+                              <td class="align-center">4</td>
+                            </tr>
+                          </tbody>
+                      </table>
+                  </div>
+              </div>
+            </div>
+          <!-- <div class="t-wrap" style="width: 100%; height: 59.9%; background: gray;">
+            <table>
+                <colgroup>
+                    <col width="100px" />
+                    <col width="150px" />
+                    <col width="150px" />
+                    <col width="150px" />
+                    <col width="110px" />
+                </colgroup>
+                <tbody id="main_tbody">
+                </tbody
+              </table>
+          </div> -->
+        </div>
+      </div>
+
+
+      <script type="text/javascript">
+
+        $(document).ready(function() {
+          // 날짜셋팅
+          dateChange("dt_stat","stt_dt","end_dt");
+        });
+
+        function searchInspection(tagObj) {
+           $('tr').removeClass('bg');
+           $(tagObj).addClass('bg');
+        }
+
+        function showRgsrTable(target_c) {
+          $('.list:not(.master)').css('display','none');
+          $('.'+target_c).css('display','block');
+        }
+
+          /**
+           * dateChange
+           * 조회조건 날짜 선택 함수
+           * stat_cd : 금일/전일/일주일/일개월/삼개월/육개월
+           * stt_dt : 시작일자 id
+           * end_dt: 종료일자 id
+           */
+          function dateChange(stat_cd, stt_dt, end_dt) {
+            // 날짜셋팅
+            var dtStat = $("#"+stat_cd).val();
+            var date = new Date();
+
+            if(dtStat == "00") { // 전체
+              $("#"+stt_dt).datepicker().datepicker("setDate", "");
+              $("#"+end_dt).datepicker().datepicker("setDate", "");
+            } else if(dtStat == "10"){ // 금일
+              $("#"+stt_dt).datepicker().datepicker("setDate", new Date());
+              $("#"+end_dt).datepicker().datepicker("setDate", new Date());
+            } else if(dtStat == "20") { // 전일
+               date.setDate(date.getDate() - 1);
+               $("#"+stt_dt).datepicker().datepicker("setDate", date);
+               $("#"+end_dt).datepicker().datepicker("setDate", new Date());
+            } else if(dtStat == "30") { // 일주일
+               date.setDate(date.getDate() - 6);
+              $("#"+stt_dt).datepicker().datepicker("setDate", date);
+              $("#"+end_dt).datepicker().datepicker("setDate", new Date());
+            }  else if(dtStat == "40") { // 1개월
+              date.setMonth(date.getMonth() - 1);
+              $("#"+stt_dt).datepicker().datepicker("setDate", date);
+              $("#"+end_dt).datepicker().datepicker("setDate", new Date());
+            } else if(dtStat == "50") { // 3개월
+               date.setMonth(date.getMonth() - 3);
+               $("#"+stt_dt).datepicker().datepicker("setDate", date);
+               $("#"+end_dt).datepicker().datepicker("setDate", new Date());
+            } else if(dtStat == "60") { // 6개월
+               date.setMonth(date.getMonth() - 6);
+               $("#"+stt_dt).datepicker().datepicker("setDate", date);
+               $("#"+end_dt).datepicker().datepicker("setDate", new Date());
+            }
+          }
+      </script>
+  </body>
+</html>

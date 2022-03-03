@@ -1,0 +1,52 @@
+{% extends "master_list.html" %}
+{% block add_detail %}
+
+<h2>ADD DETAIL</h2>
+
+<form action="" method="POST" class="s-form">
+    <div class=t-wrap>
+        <table>
+            <colgroup>
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+                <col width="30px">
+            </colgroup>
+            {% csrf_token %}
+            <th>inspection_index</th>
+            <th>sample_type_code</th>
+            <th>input_datetime</th>
+            <th>complete_datetime</th>
+            <th>x1</th>
+            <th>x2</th>
+            <th>x3</th>
+            <th>x4</th>
+            <th>x5</th>
+            <th>writer</th>
+            <tbody>
+                <tr>
+                    <td>{{form.inspection_index}}</td>
+                    <td>{{form.sample_type_code}}</td>
+                    <td>{{form.input_datetime}}</td>
+                    <td>{{form.complete_datetime}}</td>
+                    <td>{{form.x1}}</td>
+                    <td>{{form.x2}}</td>
+                    <td>{{form.x3}}</td>
+                    <td>{{form.x4}}</td>
+                    <td>{{form.x5}}</td>
+                    <td>{{form.writer}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <input type="submit">
+    </div>
+</form>
+
+
+{% endblock %}
